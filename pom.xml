@@ -100,4 +100,9 @@
             <url>http://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
+    <scm>
+        <connection>scm:git:git://github.com/lechat-im/jenkins-lechat-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:lechat-im/jenkins-lechat-plugin.git</developerConnection>
+    <url>https://github.com/lechat-im/jenkins-lechat-plugin</url>
+  </scm>
 </project>
