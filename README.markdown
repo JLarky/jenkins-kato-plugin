@@ -1,13 +1,15 @@
 # Evolution:
 
-https://github.com/jgp/hudson_campfire_plugin ->
-https://github.com/jlewallen/jenkins-hipchat-plugin ->
-https://github.com/lechat-im/jenkins-lechat-plugin
+    https://github.com/jgp/hudson_campfire_plugin ->
+    https://github.com/jlewallen/jenkins-hipchat-plugin ->
+    https://github.com/lechat-im/jenkins-lechat-plugin
 
-# Install maven 3
+# Building and Installing:
 
-$ mvn clean
+1. Install maven 3
 
-$ mvn package
+2. `$ mvn clean`
 
-target/lechat.hpi is the plugin, upload it to Jenkins
+3. `$ mvn package`
+
+4. target/lechat.hpi is the plugin, upload it to Jenkins
