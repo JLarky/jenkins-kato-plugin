@@ -21,7 +21,7 @@
     <groupId>org.jvnet.hudson.plugins</groupId>
 	<artifactId>lechat</artifactId>
 	<packaging>hpi</packaging>
-	<version>0.1.0</version>
+	<version>0.1.2-SNAPSHOT</version>
 	<name>Jenkins LeChat Plugin</name>
 	<description>A Build status publisher that notifies channels on a LeChat server</description>
     <url>http://wiki.jenkins-ci.org/display/JENKINS/LeChat+Plugin</url>
@@ -101,8 +101,8 @@
         </pluginRepository>
     </pluginRepositories>
     <scm>
-        <connection>scm:git:git://github.com/lechat-im/jenkins-lechat-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:lechat-im/jenkins-lechat-plugin.git</developerConnection>
-    <url>https://github.com/lechat-im/jenkins-lechat-plugin</url>
-  </scm>
+        <connection>scm:git:git://github.com/jenkinsci/lechat-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:jenkinsci/lechat-plugin.git</developerConnection>
+        <url>https://github.com/jenkinsci/lechat-plugin</url>
+    </scm>
 </project>
