@@ -102,7 +102,7 @@
     </pluginRepositories>
     <scm>
         <connection>scm:git:git://github.com/jenkinsci/lechat-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:jenkinsci/lechat-plugin.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/jenkinsci/lechat-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/lechat-plugin</url>
     </scm>
 </project>
