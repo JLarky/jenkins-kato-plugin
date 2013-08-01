@@ -1,5 +1,6 @@
 package jenkins.plugins.lechat;
 
+import hudson.Util;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.*;
@@ -67,7 +68,8 @@ public class LeChatNotifier extends Notifier {
     }
 
     public LeChatService newLeChatService(final String room) {
-        return new StandardLeChatService(room == null ? getRoom() : room, getSendAs() == null ? "Build Server" : getSendAs());
+        String sendAs = Util.fixEmpty(getSendAs());
+        return new StandardLeChatService(room == null ? getRoom() : room, sendAs == null ? "Build Server" : sendAs);
     }
 
     @Override
