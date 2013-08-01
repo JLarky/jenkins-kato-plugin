@@ -1,4 +1,4 @@
-package jenkins.plugins.lechat;
+package jenkins.plugins.kato;
 
 import hudson.model.AbstractBuild;
 

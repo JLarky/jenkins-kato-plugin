@@ -1,4 +1,4 @@
-package jenkins.plugins.lechat;
+package jenkins.plugins.kato;
 
 import hudson.Extension;
 import hudson.model.AbstractBuild;
@@ -13,11 +13,11 @@ import java.util.logging.Logger;
 
 @Extension
 @SuppressWarnings("rawtypes")
-public class LeChatListener extends RunListener<AbstractBuild> {
+public class KatoListener extends RunListener<AbstractBuild> {
 
-    private static final Logger logger = Logger.getLogger(LeChatListener.class.getName());
+    private static final Logger logger = Logger.getLogger(KatoListener.class.getName());
 
-    public LeChatListener() {
+    public KatoListener() {
         super(AbstractBuild.class);
     }
 
@@ -49,8 +49,8 @@ public class LeChatListener extends RunListener<AbstractBuild> {
     FineGrainedNotifier getNotifier(AbstractProject project) {
         Map<Descriptor<Publisher>, Publisher> map = project.getPublishersList().toMap();
         for (Publisher publisher : map.values()) {
-            if (publisher instanceof LeChatNotifier) {
-                return new ActiveNotifier((LeChatNotifier) publisher);
+            if (publisher instanceof KatoNotifier) {
+                return new ActiveNotifier((KatoNotifier) publisher);
             }
         }
         return new DisabledNotifier();

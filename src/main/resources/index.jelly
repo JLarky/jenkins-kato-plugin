@@ -1,7 +1,7 @@
 <!--
   This view is used to render the plugin list page.
-  Since we don't really have anything dynamic here, let's just use static HTML. 
+  Since we don't really have anything dynamic here, let's just use static HTML.
 -->
 <div>
-  This plugin is a LeChat notifier that can publish build status to LeChat rooms.
+  This plugin is a Kato notifier that can publish build status to Kato rooms.
 </div>

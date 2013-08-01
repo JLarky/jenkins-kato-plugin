@@ -11,15 +11,15 @@
     tags they use. Views are always organized according to its owner class,
     so it should be straightforward to find them.
   -->
-<f:section title="Global LeChat Notifier Settings">
-    <f:entry title="Room" help="${rootURL}/plugin/lechat/help-globalConfig-leChatRoom.html">
-        <f:textbox name="leChatRoom" value="${descriptor.getRoom()}" />
+<f:section title="Global Kato Notifier Settings">
+    <f:entry title="Room" help="${rootURL}/plugin/kato/help-globalConfig-katoRoom.html">
+        <f:textbox name="katoRoom" value="${descriptor.getRoom()}" />
     </f:entry>
-    <f:entry title="Build Server URL" help="${rootURL}/plugin/lechat/help-globalConfig-leChatBuildServerUrl.html">
-        <f:textbox name="leChatBuildServerUrl" value="${descriptor.getBuildServerUrl()}" />
+    <f:entry title="Build Server URL" help="${rootURL}/plugin/kato/help-globalConfig-katoBuildServerUrl.html">
+        <f:textbox name="katoBuildServerUrl" value="${descriptor.getBuildServerUrl()}" />
     </f:entry>
-    <f:entry title="Send As" help="${rootURL}/plugin/lechat/help-globalConfig-leChatSendAs.html">
-        <f:textbox name="leChatSendAs" value="${descriptor.getSendAs()}" />
+    <f:entry title="Send As" help="${rootURL}/plugin/kato/help-globalConfig-katoSendAs.html">
+        <f:textbox name="katoSendAs" value="${descriptor.getSendAs()}" />
     </f:entry>
   </f:section>
 </j:jelly>

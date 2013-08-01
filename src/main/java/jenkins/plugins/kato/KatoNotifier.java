@@ -1,4 +1,4 @@
-package jenkins.plugins.lechat;
+package jenkins.plugins.kato;
 
 import hudson.Util;
 import hudson.Extension;
@@ -18,9 +18,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 @SuppressWarnings({"unchecked"})
-public class LeChatNotifier extends Notifier {
+public class KatoNotifier extends Notifier {
 
-    private static final Logger logger = Logger.getLogger(LeChatNotifier.class.getName());
+    private static final Logger logger = Logger.getLogger(KatoNotifier.class.getName());
 
     private String buildServerUrl;
     private String room;
@@ -56,7 +56,7 @@ public class LeChatNotifier extends Notifier {
     }
 
     @DataBoundConstructor
-    public LeChatNotifier(final String room, String buildServerUrl, final String sendAs) {
+    public KatoNotifier(final String room, String buildServerUrl, final String sendAs) {
         super();
         this.buildServerUrl = buildServerUrl;
         this.room = room;
@@ -67,9 +67,9 @@ public class LeChatNotifier extends Notifier {
         return BuildStepMonitor.BUILD;
     }
 
-    public LeChatService newLeChatService(final String room) {
+    public KatoService newKatoService(final String room) {
         String sendAs = Util.fixEmpty(getSendAs());
-        return new StandardLeChatService(room == null ? getRoom() : room, sendAs == null ? "Build Server" : sendAs);
+        return new StandardKatoService(room == null ? getRoom() : room, sendAs == null ? "Build Server" : sendAs);
     }
 
     @Override
@@ -104,23 +104,23 @@ public class LeChatNotifier extends Notifier {
         }
 
         @Override
-        public LeChatNotifier newInstance(StaplerRequest sr) {
-            if (buildServerUrl == null) buildServerUrl = sr.getParameter("leChatBuildServerUrl");
-            if (room == null) room = sr.getParameter("leChatRoom");
-            if (sendAs == null) sendAs = sr.getParameter("leChatSendAs");
-            return new LeChatNotifier(room, buildServerUrl, sendAs);
+        public KatoNotifier newInstance(StaplerRequest sr) {
+            if (buildServerUrl == null) buildServerUrl = sr.getParameter("katoBuildServerUrl");
+            if (room == null) room = sr.getParameter("katoRoom");
+            if (sendAs == null) sendAs = sr.getParameter("katoSendAs");
+            return new KatoNotifier(room, buildServerUrl, sendAs);
         }
 
         @Override
         public boolean configure(StaplerRequest sr, JSONObject formData) throws FormException {
-            room = sr.getParameter("leChatRoom");
-            buildServerUrl = sr.getParameter("leChatBuildServerUrl");
-            sendAs = sr.getParameter("leChatSendAs");
+            room = sr.getParameter("katoRoom");
+            buildServerUrl = sr.getParameter("katoBuildServerUrl");
+            sendAs = sr.getParameter("katoSendAs");
             if (buildServerUrl != null && !buildServerUrl.endsWith("/")) {
                 buildServerUrl = buildServerUrl + "/";
             }
             try {
-                new LeChatNotifier(room, buildServerUrl, sendAs);
+                new KatoNotifier(room, buildServerUrl, sendAs);
             } catch (Exception e) {
                 throw new FormException("Failed to initialize notifier - check your global notifier configuration settings", e, "");
             }
@@ -130,11 +130,11 @@ public class LeChatNotifier extends Notifier {
 
         @Override
         public String getDisplayName() {
-            return "LeChat Notifications";
+            return "Kato Notifications";
         }
     }
 
-    public static class LeChatJobProperty extends hudson.model.JobProperty<AbstractProject<?, ?>> {
+    public static class KatoJobProperty extends hudson.model.JobProperty<AbstractProject<?, ?>> {
         private String room;
         private boolean startNotification;
         private boolean notifySuccess;
@@ -145,7 +145,7 @@ public class LeChatNotifier extends Notifier {
 
 
         @DataBoundConstructor
-        public LeChatJobProperty(String room, boolean startNotification, boolean notifyAborted, boolean notifyFailure, boolean notifyNotBuilt, boolean notifySuccess, boolean notifyUnstable) {
+        public KatoJobProperty(String room, boolean startNotification, boolean notifyAborted, boolean notifyFailure, boolean notifyNotBuilt, boolean notifySuccess, boolean notifyUnstable) {
             this.room = room;
             this.startNotification = startNotification;
             this.notifyAborted = notifyAborted;
@@ -175,9 +175,9 @@ public class LeChatNotifier extends Notifier {
             if (startNotification) {
                 Map<Descriptor<Publisher>, Publisher> map = build.getProject().getPublishersList().toMap();
                 for (Publisher publisher : map.values()) {
-                    if (publisher instanceof LeChatNotifier) {
+                    if (publisher instanceof KatoNotifier) {
                         logger.info("Invoking Started...");
-                        new ActiveNotifier((LeChatNotifier) publisher).started(build);
+                        new ActiveNotifier((KatoNotifier) publisher).started(build);
                     }
                 }
             }
@@ -207,7 +207,7 @@ public class LeChatNotifier extends Notifier {
         @Extension
         public static final class DescriptorImpl extends JobPropertyDescriptor {
             public String getDisplayName() {
-                return "LeChat Notifications";
+                return "Kato Notifications";
             }
 
             @Override
@@ -216,14 +216,14 @@ public class LeChatNotifier extends Notifier {
             }
 
             @Override
-            public LeChatJobProperty newInstance(StaplerRequest sr, JSONObject formData) throws hudson.model.Descriptor.FormException {
-                return new LeChatJobProperty(sr.getParameter("leChatProjectRoom"),
-                        sr.getParameter("leChatStartNotification") != null,
-                        sr.getParameter("leChatNotifyAborted") != null,
-                        sr.getParameter("leChatNotifyFailure") != null,
-                        sr.getParameter("leChatNotifyNotBuilt") != null,
-                        sr.getParameter("leChatNotifySuccess") != null,
-                        sr.getParameter("leChatNotifyUnstable") != null);
+            public KatoJobProperty newInstance(StaplerRequest sr, JSONObject formData) throws hudson.model.Descriptor.FormException {
+                return new KatoJobProperty(sr.getParameter("katoProjectRoom"),
+                        sr.getParameter("katoStartNotification") != null,
+                        sr.getParameter("katoNotifyAborted") != null,
+                        sr.getParameter("katoNotifyFailure") != null,
+                        sr.getParameter("katoNotifyNotBuilt") != null,
+                        sr.getParameter("katoNotifySuccess") != null,
+                        sr.getParameter("katoNotifyUnstable") != null);
             }
         }
     }

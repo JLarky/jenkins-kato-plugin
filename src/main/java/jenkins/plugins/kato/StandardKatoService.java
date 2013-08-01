@@ -1,4 +1,4 @@
-package jenkins.plugins.lechat;
+package jenkins.plugins.kato;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -6,18 +6,19 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class StandardLeChatService implements LeChatService {
+public class StandardKatoService implements KatoService {
 
-    private static final Logger logger = Logger.getLogger(StandardLeChatService.class.getName());
+    private static final Logger logger = Logger.getLogger(StandardKatoService.class.getName());
 
-    private String host = "api.lechat.im";
+    private String apiUrl = "https://api.kato.im";
     private String[] roomIds;
     private String from;
 
-    public StandardLeChatService(String roomId, String from) {
+    public StandardKatoService(String roomId, String from) {
         super();
         this.roomIds = roomId.split(",");
         this.from = from;
+        logger.info("StandardKatoService = " + from + " = " + roomId);
     }
 
     public void publish(String message) {
@@ -27,7 +28,7 @@ public class StandardLeChatService implements LeChatService {
     public void publish(String message, String color) {
         for (String roomId : roomIds) {
             HttpClient client = new HttpClient();
-            String url = "https://" + host + "/rooms/" + roomId + "/jenkins";
+            String url = apiUrl + "/rooms/" + roomId + "/jenkins";
             logger.info("Posting: " + from + " to " + url + ": " + message + " " + color);
             PostMethod post = new PostMethod(url);
 
@@ -40,7 +41,7 @@ public class StandardLeChatService implements LeChatService {
                 post.getParams().setContentCharset("UTF-8");
                 client.executeMethod(post);
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Error posting to LeChat", e);
+                logger.log(Level.WARNING, "Error posting to Kato", e);
             } finally {
                 post.releaseConnection();
             }
@@ -51,7 +52,7 @@ public class StandardLeChatService implements LeChatService {
         return color.equalsIgnoreCase("green") ? "0" : "1";
     }
 
-    void setHost(String host) {
-        this.host = host;
+    void setApiUrl(String apiUrl) {
+        this.apiUrl = apiUrl;
     }
 }

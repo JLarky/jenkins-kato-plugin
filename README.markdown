@@ -2,7 +2,7 @@
 
     https://github.com/jgp/hudson_campfire_plugin ->
     https://github.com/jlewallen/jenkins-hipchat-plugin ->
-    https://github.com/lechat-im/jenkins-lechat-plugin
+    https://github.com/jenkinsci/kato-plugin
 
 # Building and Installing:
 
@@ -12,4 +12,4 @@
 
 3. `$ mvn package`
 
-4. target/lechat.hpi is the plugin, upload it to Jenkins
+4. target/kato.hpi is the plugin, upload it to Jenkins

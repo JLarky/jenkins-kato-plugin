@@ -1,4 +1,4 @@
-package jenkins.plugins.lechat;
+package jenkins.plugins.kato;
 
 import hudson.Util;
 import hudson.model.AbstractBuild;
@@ -19,19 +19,19 @@ import java.util.logging.Logger;
 @SuppressWarnings("rawtypes")
 public class ActiveNotifier implements FineGrainedNotifier {
 
-    private static final Logger logger = Logger.getLogger(LeChatListener.class.getName());
+    private static final Logger logger = Logger.getLogger(KatoListener.class.getName());
 
-    LeChatNotifier notifier;
+    KatoNotifier notifier;
 
-    public ActiveNotifier(LeChatNotifier notifier) {
+    public ActiveNotifier(KatoNotifier notifier) {
         super();
         this.notifier = notifier;
     }
 
-    private LeChatService getLeChat(AbstractBuild r) {
+    private KatoService getKato(AbstractBuild r) {
         AbstractProject<?, ?> project = r.getProject();
-        String projectRoom = Util.fixEmpty(project.getProperty(LeChatNotifier.LeChatJobProperty.class).getRoom());
-        return notifier.newLeChatService(projectRoom);
+        String projectRoom = Util.fixEmpty(project.getProperty(KatoNotifier.KatoJobProperty.class).getRoom());
+        return notifier.newKatoService(projectRoom);
     }
 
     public void deleted(AbstractBuild r) {
@@ -53,7 +53,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
     }
 
     private void notifyStart(AbstractBuild build, String message) {
-        getLeChat(build).publish(message, "green");
+        getKato(build).publish(message, "green");
     }
 
     public void finalized(AbstractBuild r) {
@@ -62,14 +62,14 @@ public class ActiveNotifier implements FineGrainedNotifier {
     public void completed(AbstractBuild r) {
 
         AbstractProject<?, ?> project = r.getProject();
-        LeChatNotifier.LeChatJobProperty jobProperty = project.getProperty(LeChatNotifier.LeChatJobProperty.class);
+        KatoNotifier.KatoJobProperty jobProperty = project.getProperty(KatoNotifier.KatoJobProperty.class);
         Result result = r.getResult();
         if ((result == Result.ABORTED && jobProperty.getNotifyAborted())
                 || (result == Result.FAILURE && jobProperty.getNotifyFailure())
                 || (result == Result.NOT_BUILT && jobProperty.getNotifyNotBuilt())
                 || (result == Result.SUCCESS && jobProperty.getNotifySuccess())
                 || (result == Result.UNSTABLE && jobProperty.getNotifyUnstable())) {
-            getLeChat(r).publish(getBuildStatusMessage(r), getBuildColor(r));
+            getKato(r).publish(getBuildStatusMessage(r), getBuildColor(r));
         }
 
     }
@@ -125,10 +125,10 @@ public class ActiveNotifier implements FineGrainedNotifier {
 
     public static class MessageBuilder {
         private StringBuffer message;
-        private LeChatNotifier notifier;
+        private KatoNotifier notifier;
         private AbstractBuild build;
 
-        public MessageBuilder(LeChatNotifier notifier, AbstractBuild build) {
+        public MessageBuilder(KatoNotifier notifier, AbstractBuild build) {
             this.notifier = notifier;
             this.message = new StringBuffer();
             this.build = build;
