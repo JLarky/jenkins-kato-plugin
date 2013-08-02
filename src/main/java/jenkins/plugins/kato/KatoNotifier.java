@@ -22,7 +22,6 @@ public class KatoNotifier extends Notifier {
 
     private static final Logger logger = Logger.getLogger(KatoNotifier.class.getName());
 
-    private String buildServerUrl;
     private String room;
     private String sendAs;
 
@@ -30,16 +29,8 @@ public class KatoNotifier extends Notifier {
         return DESCRIPTOR.getRoom();
     }
 
-    public String getBuildServerUrl() {
-        return buildServerUrl;
-    }
-
     public String getSendAs() {
         return DESCRIPTOR.getSendAs();
-    }
-
-    public void setBuildServerUrl(final String buildServerUrl) {
-        this.buildServerUrl = buildServerUrl;
     }
 
     public void setRoom(final String room) {
@@ -51,9 +42,8 @@ public class KatoNotifier extends Notifier {
     }
 
     @DataBoundConstructor
-    public KatoNotifier(final String room, String buildServerUrl, final String sendAs) {
+    public KatoNotifier(final String room, final String sendAs) {
         super();
-        this.buildServerUrl = buildServerUrl;
         this.room = room;
         this.sendAs = sendAs;
     }
@@ -77,7 +67,6 @@ public class KatoNotifier extends Notifier {
 
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
         private String room;
-        private String buildServerUrl;
         private String sendAs;
 
         public DescriptorImpl() {
@@ -93,10 +82,6 @@ public class KatoNotifier extends Notifier {
             return room;
         }
 
-        public String getBuildServerUrl() {
-            return buildServerUrl;
-        }
-
         public String getSendAs() {
             return sendAs;
         }
@@ -107,22 +92,17 @@ public class KatoNotifier extends Notifier {
 
         @Override
         public KatoNotifier newInstance(StaplerRequest sr) {
-            if (buildServerUrl == null) buildServerUrl = sr.getParameter("katoBuildServerUrl");
             if (room == null) room = sr.getParameter("katoRoom");
             if (sendAs == null) sendAs = sr.getParameter("katoSendAs");
-            return new KatoNotifier(room, buildServerUrl, sendAs);
+            return new KatoNotifier(room, sendAs);
         }
 
         @Override
         public boolean configure(StaplerRequest sr, JSONObject formData) throws FormException {
             room = sr.getParameter("katoRoom");
-            buildServerUrl = sr.getParameter("katoBuildServerUrl");
             sendAs = sr.getParameter("katoSendAs");
-            if (buildServerUrl != null && !buildServerUrl.endsWith("/")) {
-                buildServerUrl = buildServerUrl + "/";
-            }
             try {
-                new KatoNotifier(room, buildServerUrl, sendAs);
+                new KatoNotifier(room, sendAs);
             } catch (Exception e) {
                 throw new FormException("Failed to initialize notifier - check your global notifier configuration settings", e, "");
             }

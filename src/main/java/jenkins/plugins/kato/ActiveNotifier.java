@@ -3,6 +3,7 @@ package jenkins.plugins.kato;
 import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Hudson;
 import hudson.model.CauseAction;
 import hudson.model.Result;
 import hudson.scm.ChangeLogSet;
@@ -172,7 +173,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
         }
 
         public MessageBuilder appendOpenLink() {
-            String url = notifier.getBuildServerUrl() + build.getUrl();
+            String url = Hudson.getInstance().getRootUrl() + build.getUrl();
             message.append(" (<a href='").append(url).append("'>Open</a>)");
             return this;
         }

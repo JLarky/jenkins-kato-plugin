@@ -15,9 +15,6 @@
     <f:entry title="Room" help="${rootURL}/plugin/kato/help-globalConfig-katoRoom.html">
         <f:textbox name="katoRoom" value="${descriptor.getRoom()}" />
     </f:entry>
-    <f:entry title="Build Server URL" help="${rootURL}/plugin/kato/help-globalConfig-katoBuildServerUrl.html">
-        <f:textbox name="katoBuildServerUrl" value="${descriptor.getBuildServerUrl()}" />
-    </f:entry>
     <f:entry title="Send As" help="${rootURL}/plugin/kato/help-globalConfig-katoSendAs.html">
         <f:textbox name="katoSendAs" value="${descriptor.getSendAs()}" />
     </f:entry>
