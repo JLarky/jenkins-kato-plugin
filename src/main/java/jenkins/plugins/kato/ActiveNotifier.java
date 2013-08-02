@@ -30,9 +30,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
     }
 
     private KatoService getKato(AbstractBuild r) {
-        AbstractProject<?, ?> project = r.getProject();
-        String projectRoom = Util.fixEmpty(project.getProperty(KatoNotifier.KatoJobProperty.class).getRoom());
-        return notifier.newKatoService(projectRoom);
+        return notifier.newKatoService();
     }
 
     public void deleted(AbstractBuild r) {
@@ -54,25 +52,22 @@ public class ActiveNotifier implements FineGrainedNotifier {
     }
 
     private void notifyStart(AbstractBuild build, String message) {
-        getKato(build).publish(message, "green");
+        if (notifier.getStartNotification())
+            getKato(build).publish(message, "green");
     }
 
     public void finalized(AbstractBuild r) {
     }
 
     public void completed(AbstractBuild r) {
-
-        AbstractProject<?, ?> project = r.getProject();
-        KatoNotifier.KatoJobProperty jobProperty = project.getProperty(KatoNotifier.KatoJobProperty.class);
         Result result = r.getResult();
-        if ((result == Result.ABORTED && jobProperty.getNotifyAborted())
-                || (result == Result.FAILURE && jobProperty.getNotifyFailure())
-                || (result == Result.NOT_BUILT && jobProperty.getNotifyNotBuilt())
-                || (result == Result.SUCCESS && jobProperty.getNotifySuccess())
-                || (result == Result.UNSTABLE && jobProperty.getNotifyUnstable())) {
+        if ((result == Result.ABORTED && notifier.getNotifyAborted())
+            || (result == Result.FAILURE && notifier.getNotifyFailure())
+            || (result == Result.NOT_BUILT && notifier.getNotifyNotBuilt())
+            || (result == Result.SUCCESS && notifier.getNotifySuccess())
+            || (result == Result.UNSTABLE && notifier.getNotifyUnstable())) {
             getKato(r).publish(getBuildStatusMessage(r), getBuildColor(r));
         }
-
     }
 
     String getChanges(AbstractBuild r) {

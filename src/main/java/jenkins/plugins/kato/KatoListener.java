@@ -29,8 +29,8 @@ public class KatoListener extends RunListener<AbstractBuild> {
 
     @Override
     public void onStarted(AbstractBuild r, TaskListener listener) {
-        // getNotifier(r.getProject()).started(r);
-        // super.onStarted(r, listener);
+        getNotifier(r.getProject()).started(r);
+        super.onStarted(r, listener);
     }
 
     @Override

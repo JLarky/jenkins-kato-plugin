@@ -19,11 +19,48 @@ import java.util.logging.Logger;
 
 @SuppressWarnings({"unchecked"})
 public class KatoNotifier extends Notifier {
+    // settings
+    private String room;
+    private String sendAs;
+    // notification settings
+    private boolean startNotification;
+    private boolean notifyAborted;
+    private boolean notifyFailure;
+    private boolean notifyNotBuilt;
+    private boolean notifySuccess;
+    private boolean notifyUnstable;
 
     private static final Logger logger = Logger.getLogger(KatoNotifier.class.getName());
 
-    private String room;
-    private String sendAs;
+    // getters for project configuration..
+    // Configured room name should be null unless different from descriptor/global values
+    public String getConfiguredRoomName() {
+        if ( getRoom().equals(room) ) {
+            return null;
+        } else {
+            return room;
+        }
+    }
+
+    // getters for config.jelly
+    public boolean getStartNotification() {
+        return startNotification;
+    }
+    public boolean getNotifyAborted() {
+        return notifyAborted;
+    }
+    public boolean getNotifyFailure() {
+        return notifyFailure;
+    }
+    public boolean getNotifyNotBuilt() {
+        return notifyNotBuilt;
+    }
+    public boolean getNotifySuccess() {
+        return notifySuccess;
+    }
+    public boolean getNotifyUnstable() {
+        return notifyUnstable;
+    }
 
     public String getRoom() {
         return DESCRIPTOR.getRoom();
@@ -33,28 +70,40 @@ public class KatoNotifier extends Notifier {
         return DESCRIPTOR.getSendAs();
     }
 
-    public void setRoom(final String room) {
-        this.room = room;
+    // getters for kato
+    private String getInstanceRoom() {
+        return (room == null ? getRoom() : room);
     }
-
-    public void setSendAs(final String sendAs) {
-        this.sendAs = sendAs;
+    private String getInstanceSendAs() {
+        String sendAs = Util.fixEmpty(getSendAs());
+        return (sendAs == null ? "Build Server" : sendAs);
     }
 
     @DataBoundConstructor
-    public KatoNotifier(final String room, final String sendAs) {
+    public KatoNotifier(final String room, final String sendAs, boolean startNotification, boolean notifyAborted, boolean notifyFailure, boolean notifyNotBuilt, boolean notifySuccess, boolean notifyUnstable) {
         super();
-        this.room = room;
-        this.sendAs = sendAs;
+        // instance variables
+        this.room                = room;
+        this.sendAs              = sendAs;
+        this.startNotification   = startNotification;
+        this.notifyAborted       = notifyAborted;
+        this.notifyFailure       = notifyFailure;
+        this.notifyNotBuilt      = notifyNotBuilt;
+        this.notifySuccess       = notifySuccess;
+        this.notifyUnstable      = notifyUnstable;
+        // validation
+        String katoRoom = getInstanceRoom();
+        if (katoRoom == null || katoRoom.trim().length() == 0) {
+            throw new RuntimeException("room must be not empty");
+        }
     }
 
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.BUILD;
     }
 
-    public KatoService newKatoService(final String room) {
-        String sendAs = Util.fixEmpty(getSendAs());
-        return new StandardKatoService(room == null ? getRoom() : room, sendAs == null ? "Build Server" : sendAs);
+    public KatoService newKatoService() {
+        return new StandardKatoService(getInstanceRoom(), getInstanceSendAs());
     }
 
     @Override
@@ -66,8 +115,18 @@ public class KatoNotifier extends Notifier {
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
+        // settings
         private String room;
         private String sendAs;
+
+        // getters for global.jelly
+        public String getRoom() {
+            return room;
+        }
+
+        public String getSendAs() {
+            return sendAs;
+        }
 
         public DescriptorImpl() {
             super(KatoNotifier.class);
@@ -78,33 +137,50 @@ public class KatoNotifier extends Notifier {
             super(clazz);
         }
 
-        public String getRoom() {
-            return room;
-        }
-
-        public String getSendAs() {
-            return sendAs;
-        }
-
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
             return true;
         }
 
+        /**
+         * @see hudson.model.Descriptor#newInstance(org.kohsuke.stapler.StaplerRequest)
+         */
         @Override
-        public KatoNotifier newInstance(StaplerRequest sr) {
-            if (room == null) room = sr.getParameter("katoRoom");
-            if (sendAs == null) sendAs = sr.getParameter("katoSendAs");
-            return new KatoNotifier(room, sendAs);
+        public KatoNotifier newInstance(StaplerRequest sr) throws FormException { // handles config.jelly
+            // instance only settings
+            boolean startNotification = sr.getParameter("startNotification") != null;
+            boolean notifyAborted     = sr.getParameter("notifyAborted") != null;
+            boolean notifyFailure     = sr.getParameter("notifyFailure") != null;
+            boolean notifyNotBuilt    = sr.getParameter("notifyNotBuilt") != null;
+            boolean notifySuccess     = sr.getParameter("notifySuccess") != null;
+            boolean notifyUnstable    = sr.getParameter("notifyUnstable") != null;
+            // override global settings if room isn't empty
+            String projectRoom = sr.getParameter("katoProjectRoom");
+            if ( projectRoom == null || projectRoom.trim().length() == 0 ) {
+                projectRoom = sr.getParameter("katoRoom");
+            }
+            // use global value
+            sendAs = sr.getParameter("katoSendAs");
+            try {
+                return new KatoNotifier(projectRoom, sendAs, startNotification, notifyAborted, notifyFailure, notifyNotBuilt, notifySuccess, notifyUnstable);
+            } catch (Exception e) {
+                String message = "Failed to initialize kato notifier - check your campfire notifier configuration settings: " + e.getMessage();
+                logger.warning(message);
+                throw new FormException(message, e, "");
+            }
         }
 
         @Override
-        public boolean configure(StaplerRequest sr, JSONObject formData) throws FormException {
+        public boolean configure(StaplerRequest sr, JSONObject formData) throws FormException { // handles global.jelly
+            // apply new global settings
             room = sr.getParameter("katoRoom");
             sendAs = sr.getParameter("katoSendAs");
+            // validate settings
             try {
-                new KatoNotifier(room, sendAs);
+                new KatoNotifier(room, sendAs, false, false, false, false, false, false);
             } catch (Exception e) {
-                throw new FormException("Failed to initialize notifier - check your global notifier configuration settings", e, "");
+                String message = "Failed to initialize kato notifier - check your campfire notifier configuration settings: " + e.getMessage();
+                logger.warning(message);
+                throw new FormException(message, e, "");
             }
             save();
             return super.configure(sr, formData);
@@ -113,100 +189,6 @@ public class KatoNotifier extends Notifier {
         @Override
         public String getDisplayName() {
             return "Kato Notifications";
-        }
-    }
-
-    public static class KatoJobProperty extends hudson.model.JobProperty<AbstractProject<?, ?>> {
-        private String room;
-        private boolean startNotification;
-        private boolean notifySuccess;
-        private boolean notifyAborted;
-        private boolean notifyNotBuilt;
-        private boolean notifyUnstable;
-        private boolean notifyFailure;
-
-
-        @DataBoundConstructor
-        public KatoJobProperty(String room, boolean startNotification, boolean notifyAborted, boolean notifyFailure, boolean notifyNotBuilt, boolean notifySuccess, boolean notifyUnstable) {
-            this.room = room;
-            this.startNotification = startNotification;
-            this.notifyAborted = notifyAborted;
-            this.notifyFailure = notifyFailure;
-            this.notifyNotBuilt = notifyNotBuilt;
-            this.notifySuccess = notifySuccess;
-            this.notifyUnstable = notifyUnstable;
-        }
-
-        @Exported
-        public String getRoom() {
-            return room;
-        }
-
-        @Exported
-        public boolean getStartNotification() {
-            return startNotification;
-        }
-
-        @Exported
-        public boolean getNotifySuccess() {
-            return notifySuccess;
-        }
-
-        @Override
-        public boolean prebuild(AbstractBuild<?, ?> build, BuildListener listener) {
-            if (startNotification) {
-                Map<Descriptor<Publisher>, Publisher> map = build.getProject().getPublishersList().toMap();
-                for (Publisher publisher : map.values()) {
-                    if (publisher instanceof KatoNotifier) {
-                        logger.info("Invoking Started...");
-                        new ActiveNotifier((KatoNotifier) publisher).started(build);
-                    }
-                }
-            }
-            return super.prebuild(build, listener);
-        }
-
-        @Exported
-        public boolean getNotifyAborted() {
-            return notifyAborted;
-        }
-
-        @Exported
-        public boolean getNotifyFailure() {
-            return notifyFailure;
-        }
-
-        @Exported
-        public boolean getNotifyNotBuilt() {
-            return notifyNotBuilt;
-        }
-
-        @Exported
-        public boolean getNotifyUnstable() {
-            return notifyUnstable;
-        }
-
-        @Extension
-        public static final class DescriptorImpl extends JobPropertyDescriptor {
-            public String getDisplayName() {
-                return "Kato Notifications";
-            }
-
-            @Override
-            public boolean isApplicable(Class<? extends Job> jobType) {
-                return true;
-            }
-
-            @Override
-            public KatoJobProperty newInstance(StaplerRequest sr, JSONObject formData) throws hudson.model.Descriptor.FormException {
-                return new KatoJobProperty(sr.getParameter("katoProjectRoom"),
-                        sr.getParameter("katoStartNotification") != null,
-                        sr.getParameter("katoNotifyAborted") != null,
-                        sr.getParameter("katoNotifyFailure") != null,
-                        sr.getParameter("katoNotifyNotBuilt") != null,
-                        sr.getParameter("katoNotifySuccess") != null,
-                        sr.getParameter("katoNotifyUnstable") != null);
-            }
         }
     }
 }

@@ -1,0 +1,27 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <!--
+    This jelly script is used for per-project configuration.
+    See global.jelly for a general discussion about jelly script.
+  -->
+    <f:entry title="Project Room" description="Optional. Use to send notifications to a room other than the default (${descriptor.getRoom()})" help="${rootURL}/plugin/kato/help-projectConfig-katoRoom.html">
+      <f:textbox name="katoProjectRoom" value="${instance.getConfiguredRoomName()}"/>
+    </f:entry>
+	<f:entry title="Notify Build Start">
+  		<f:checkbox name="startNotification" value="true" checked="${instance.getStartNotification()}"/>
+	</f:entry>
+    <f:entry title="Notify Aborted">
+        <f:checkbox name="notifyAborted" value="true" checked="${instance.getNotifyAborted()}"/>
+    </f:entry>
+    <f:entry title="Notify Failure">
+        <f:checkbox name="notifyFailure" value="true" checked="${instance.getNotifyFailure()}"/>
+    </f:entry>
+    <f:entry title="Notify Not Built">
+        <f:checkbox name="notifyNotBuilt" value="true" checked="${instance.getNotifyNotBuilt()}"/>
+    </f:entry>
+    <f:entry title="Notify Success">
+        <f:checkbox name="notifySuccess" value="true" checked="${instance.getNotifySuccess()}"/>
+    </f:entry>
+    <f:entry title="Notify Unstable">
+        <f:checkbox name="notifyUnstable" value="true" checked="${instance.getNotifyUnstable()}"/>
+    </f:entry>
+</j:jelly>
