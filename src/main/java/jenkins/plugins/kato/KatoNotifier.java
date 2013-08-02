@@ -26,13 +26,8 @@ public class KatoNotifier extends Notifier {
     private String room;
     private String sendAs;
 
-    @Override
-    public DescriptorImpl getDescriptor() {
-        return (DescriptorImpl) super.getDescriptor();
-    }
-
     public String getRoom() {
-        return room;
+        return DESCRIPTOR.getRoom();
     }
 
     public String getBuildServerUrl() {
@@ -40,7 +35,7 @@ public class KatoNotifier extends Notifier {
     }
 
     public String getSendAs() {
-        return sendAs;
+        return DESCRIPTOR.getSendAs();
     }
 
     public void setBuildServerUrl(final String buildServerUrl) {
@@ -78,13 +73,20 @@ public class KatoNotifier extends Notifier {
     }
 
     @Extension
+    public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
+
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
         private String room;
         private String buildServerUrl;
         private String sendAs;
 
         public DescriptorImpl() {
+            super(KatoNotifier.class);
             load();
+        }
+
+        protected DescriptorImpl(Class<? extends Publisher> clazz) {
+            super(clazz);
         }
 
         public String getRoom() {
