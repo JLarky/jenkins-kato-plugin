@@ -45,6 +45,20 @@
         </repository>
     </distributionManagement>
 
+    <developers>
+        <developer>
+            <id>abs</id>
+            <name>Andrei Soroker</name>
+            <url>https://github.com/abs</url>
+        </developer>
+        <developer>
+            <id>jlarky</id>
+            <name>Yaroslav Lapin</name>
+            <url>https://github.com/jlarky</url>
+            <email>jlarky@gmail.com</email>
+        </developer>
+    </developers>
+
 	<dependencies>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
